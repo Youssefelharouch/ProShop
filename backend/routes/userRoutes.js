@@ -8,6 +8,7 @@ import {
   deleteUser,
   getUserById,
   updateUser,
+  logoutUser,
 } from '../controllers/userControllers.js';
 import { protect,admin } from '../middleware/authModdleware.js';
 
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.route('/').post(registerUser).get(protect,admin,getUsers);
 router.post('/auth', authUser);
+router.post('/logout', logoutUser);
 
 //protected
 router.route('/profile').get(protect,getUserProfile).put(protect,updateUserProfile);
