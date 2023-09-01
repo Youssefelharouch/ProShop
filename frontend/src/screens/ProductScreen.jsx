@@ -12,10 +12,6 @@ import { addToCart } from '../slices/carteSlice';
 
 
 
-
-
-
-
 const ProductScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
