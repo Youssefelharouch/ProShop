@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import productRoutes from './routes/productRoute.js';
 import userRoutes from './routes/userRoutes.js';
+import orderRoutes from './routes/ordersRoutes.js';
 import connectDB from "./config/db.js";
 import { notFound,errorHandler } from './middleware/ErrorModdleware.js'
 
@@ -26,6 +27,8 @@ const port = process.env.PORT || 5000;
 
 app.use('/api/products',productRoutes);
 app.use('/api/users',userRoutes);
+app.use('/api/orders', orderRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('API is running...');
