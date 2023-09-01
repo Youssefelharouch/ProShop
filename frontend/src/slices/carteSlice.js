@@ -4,22 +4,9 @@ import { updateCart } from "../utils/cartUtils";
 
 const initialState = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [] };
-/*
-  {
-    name: "Sony Playstation 4 Pro White Version",
-    image: "/images/playstation.jpg",
-    description:
-      "The ultimate home entertainment center starts with PlayStation. Whether you are into gaming, HD movies, television, music",
-    brand: "Sony",
-    category: "Electronics",
-    price: 399.99,
-    countInStock: 11,
-    rating: 5,
-    numReviews: 12,
-  },
+  : { cartItems: [], shippingAddress: {}, paymentMethod: 'PayPal' };
 
-*/
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
@@ -42,7 +29,12 @@ const cartSlice = createSlice({
       state.cartItems = state.cartItems.filter((x) => x._id !== action.payload);
       return updateCart(state);
     },
+    saveShippingAddress: (state, action) => {
+      state.shippingAddress = action.payload;
+      // localStorage.setItem('cart', JSON.stringify(state));
+      return updateCart(state);
+    },
   },
 });
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart , saveShippingAddress } = cartSlice.actions;
 export default cartSlice.reducer;
