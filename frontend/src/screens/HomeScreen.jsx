@@ -1,7 +1,7 @@
 import React from 'react'
 import {Row,Col} from 'react-bootstrap'
 import { useGetProductsQuery } from '../slices/productSlice'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import Product from '../components/Product'
 import Loader from '../components/Loader'
@@ -10,12 +10,13 @@ import Paginate from '../components/Paginate'
 
 const HomeScreen = () => {
 
-  const { pageNumber } = useParams();
-  const { data, isLoading, error } = useGetProductsQuery({pageNumber});
+  const { pageNumber,keyword } = useParams();
+  const { data, isLoading, error } = useGetProductsQuery({keyword,pageNumber});
 
   
   return (
     <>
+    {keyword && <Link to='/'   className='btn btn-light mt-4' >Go Back</Link> }
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -25,7 +26,7 @@ const HomeScreen = () => {
       
       ) : (
         <>
-          <h1>Latest Products</h1>
+          <h1 className='mt-4'>Latest Products</h1>
           <Row>
             {data.products.map((product) => (
               <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
@@ -33,7 +34,11 @@ const HomeScreen = () => {
               </Col>
             ))}
           </Row>
-          <Paginate pages={data.pages} page={data.page} />
+          <Paginate
+            pages={data.pages}
+            page={data.page}
+            keyword={keyword ? keyword : ''}
+          />
 
         </>
       )}
