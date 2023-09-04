@@ -1,7 +1,7 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Products from "../models/productModel.js";
 
-// @descriptiop Fetch all products 
+// @descriptiop Fetch all products
 // @route api/product
 // @access Public
 
@@ -16,12 +16,11 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const getSingleProduct = asyncHandler(async (req, res) => {
   const product = await Products.findById(req.params.id);
-  if(product)res.json(product);
+  if (product) res.json(product);
   else {
     res.status(404);
-    throw new Error('Product not found');
+    throw new Error("Product not found");
   }
-
 });
 
 // @desc    Create a product
@@ -29,15 +28,15 @@ const getSingleProduct = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
   const product = new Products({
-    name: 'Sample name',
+    name: "Sample name",
     price: 0,
     user: req.user._id,
-    image: '/images/sample.jpg',
-    brand: 'Sample brand',
-    category: 'Sample category',
+    image: "/images/sample.jpg",
+    brand: "Sample brand",
+    category: "Sample category",
     countInStock: 0,
     numReviews: 0,
-    description: 'Sample description',
+    description: "Sample description",
   });
 
   const createdProduct = await product.save();
@@ -66,7 +65,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     res.json(updatedProduct);
   } else {
     res.status(404);
-    throw new Error('Product not found');
+    throw new Error("Product not found");
   }
 });
 // @desc    Delete a product
@@ -77,12 +76,59 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
   if (product) {
     await Products.deleteOne({ _id: product._id });
-    res.json({ message: 'Product removed' });
+    res.json({ message: "Product removed" });
   } else {
     res.status(404);
-    throw new Error('Product not found');
+    throw new Error("Product not found");
   }
 });
 
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
+const createProductReview = asyncHandler(async (req, res) => {
+  const { rating, comment } = req.body;
 
-export  {getProducts,getSingleProduct,createProduct,updateProduct,deleteProduct }
+  const product = await Products.findById(req.params.id);
+
+  if (product) {
+    const alreadyReviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      res.status(400);
+      throw new Error("Product already reviewed");
+    }
+
+    const review = {
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      user: req.user._id,
+    };
+
+    product.reviews.push(review);
+
+    product.numReviews = product.reviews.length;
+
+    product.rating =
+      product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+      product.reviews.length;
+
+    await product.save();
+    res.status(201).json({ message: "Review added" });
+  } else {
+    res.status(404);
+    throw new Error("Product not found");
+  }
+});
+
+export {
+  getProducts,
+  getSingleProduct,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  createProductReview
+};
